@@ -21,9 +21,11 @@ class SearchEngineTest {
     void search() {
         var result = SearchEngine.search(docs, "shoot");
 
+        System.out.println(result);
         assertTrue(result.contains("doc1"));
         assertTrue(result.contains("doc2"));
         assertFalse(result.contains("doc3"));
+        assertEquals(0, result.indexOf("doc2"));
     }
 
     @Test
