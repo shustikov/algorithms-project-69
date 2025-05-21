@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
@@ -9,7 +10,9 @@ import java.util.stream.Collectors;
 public class SearchEngine {
     public static List<String> search(List<Map<String, String>> docs, String text) {
         return docs.stream()
-                .filter(doc -> doc.get("text").contains(trim(text) + " "))
+                .filter(doc -> Arrays.stream(doc.get("text").split(" "))
+                        .map(SearchEngine::trim)
+                        .anyMatch(item -> item.equals(trim(text))))
                 .map(doc -> doc.get("id"))
                 .toList();
     }

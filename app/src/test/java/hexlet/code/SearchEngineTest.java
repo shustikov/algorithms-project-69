@@ -25,4 +25,20 @@ class SearchEngineTest {
         assertTrue(result.contains("doc2"));
         assertFalse(result.contains("doc3"));
     }
+
+    @Test
+    void search_tokenizedInput() {
+        var result = SearchEngine.search(docs, "pint");
+
+        assertTrue(result.contains("doc1"));
+        assertFalse(result.contains("doc3"));
+    }
+
+    @Test
+    void search_untokenizedInput() {
+        var result = SearchEngine.search(docs, "pint!");
+
+        assertTrue(result.contains("doc1"));
+        assertFalse(result.contains("doc3"));
+    }
 }
