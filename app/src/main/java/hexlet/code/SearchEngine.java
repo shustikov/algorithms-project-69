@@ -7,8 +7,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SearchEngine {
-    private static final ToIntFunction<Map.Entry<?, List<Integer>>> bySize = entry -> entry.getValue().size();
-    private static final ToIntFunction<Map.Entry<?, List<Integer>>> byMax = entry -> Collections.max(entry.getValue());
+    private static final ToIntFunction<Map.Entry<?, List<Integer>>> bySize =
+            entry -> entry.getValue().size();
+    private static final ToIntFunction<Map.Entry<?, List<Integer>>> byMax =
+            entry -> Collections.max(entry.getValue());
 
 
     public static List<String> search(List<Map<String, String>> docs, String text) {
@@ -25,8 +27,9 @@ public class SearchEngine {
                         countWordsFromSearchInDoc(entry.getValue(), searchingWords))
                 )
                 .filter(entry -> !entry.getValue().isEmpty())
-                .sorted(Comparator.comparingInt(bySize).reversed().thenComparing(Comparator.comparingInt(byMax).reversed()))
-                .peek(mapListEntry -> System.out.println(mapListEntry.getValue()))
+                .sorted(Comparator.comparingInt(bySize).reversed()
+                        .thenComparing(Comparator.comparingInt(byMax).reversed()))
+                .peek(mapListEntry -> System.out.println(mapListEntry.getValue())) //log
                 .map(Map.Entry::getKey)
                 .map(doc -> doc.get("id"))
                 .toList();
@@ -49,5 +52,14 @@ public class SearchEngine {
 
     private static Integer countWordInDoc(List<String> doc, String word) {
         return Math.toIntExact(doc.stream().filter(docWord -> docWord.equals(word)).count());
+    }
+
+    private static Map<String, List<String>> reverseIndex(List<Map<String, String>> docs) {
+        return docs.stream()
+                .map(doc -> Map.entry(doc, Arrays.stream(doc.get("text").split(" "))
+                        .toList()))
+                .flatMap(mapListEntry -> mapListEntry.getValue().stream()
+                        .map(word -> Map.entry(word, mapListEntry.getKey().get("id"))))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
 }
