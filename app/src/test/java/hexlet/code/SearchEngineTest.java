@@ -43,4 +43,13 @@ class SearchEngineTest {
         assertTrue(result.contains("doc1"));
         assertFalse(result.contains("doc3"));
     }
+
+    @Test
+    void search_fewWords() {
+        var result = SearchEngine.search(docs, "shoot at me");
+
+        assertTrue(result.contains("doc1"));
+        assertFalse(result.contains("doc3"));
+        assertEquals(0, result.indexOf("doc2"));
+    }
 }
