@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 class SearchEngineTest {
     private static final String doc1 = "I can't shoot straight unless I've had a pint!";
     private static final String doc2 = "Don't shoot shoot shoot that thing at me.";
@@ -21,7 +22,6 @@ class SearchEngineTest {
     void search() {
         var result = SearchEngine.search(docs, "shoot");
 
-        System.out.println(result);
         assertTrue(result.contains("doc1"));
         assertTrue(result.contains("doc2"));
         assertFalse(result.contains("doc3"));
