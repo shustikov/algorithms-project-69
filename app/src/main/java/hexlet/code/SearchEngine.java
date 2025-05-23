@@ -10,7 +10,8 @@ public class SearchEngine {
         var searchingWords = Arrays.stream(text.split(" ")).map(SearchEngine::trim).toList();
         System.out.println("WORDS: " + searchingWords);
         var index = index(docs);
-        System.out.println("INDEX: " + index);
+        index.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue().stream().filter(s-> s.equals("trash") || s.equals("island")).sorted().toList()))
+                .forEach(entry -> System.out.println("INDEX: " + entry.getKey() + " = " + entry.getValue()));
         var reversedIndex = reverseIndex(index);
         System.out.println("REVERSED: " + reversedIndex);
         var scoredResultMap = idfFt(index, reversedIndex, searchingWords);
@@ -32,8 +33,9 @@ public class SearchEngine {
 
     private static Map<String, List<String>> index(List<Map<String, String>> docs) {
         return docs.stream().flatMap(item ->
-                        Arrays.stream(item.get("text").split(" "))
+                        Arrays.stream(item.get("text").split("\\s"))
                                 .map(SearchEngine::trim)
+                                .filter(s -> !s.isEmpty())
                                 .map(word -> Map.entry(item.get("id"), word)))
                 .collect(Collectors.groupingBy(
                         Map.Entry::getKey,
