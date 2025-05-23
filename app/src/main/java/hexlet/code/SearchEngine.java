@@ -8,9 +8,13 @@ import java.util.stream.Collectors;
 public class SearchEngine {
     public static List<String> search(List<Map<String, String>> docs, String text) {
         var searchingWords = Arrays.stream(text.split(" ")).map(SearchEngine::trim).toList();
+        System.out.println("WORDS: " + searchingWords);
         var index = index(docs);
+        System.out.println("INDEX: " + index);
         var reversedIndex = reverseIndex(index);
+        System.out.println("REVERSED: " + reversedIndex);
         var scoredResultMap = idfFt(index, reversedIndex, searchingWords);
+        System.out.println("RES: " + scoredResultMap);
 
         return scoredResultMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -41,6 +45,7 @@ public class SearchEngine {
         return index.entrySet().stream()
                 .flatMap(mapListEntry -> mapListEntry.getValue().stream()
                         .map(word -> Map.entry(word, mapListEntry.getKey())))
+                .filter(entry -> !entry.getKey().isEmpty())
                 .collect(Collectors.groupingBy(
                         Map.Entry::getKey,
                         Collectors.mapping(Map.Entry::getValue, Collectors.toList())
@@ -63,6 +68,9 @@ public class SearchEngine {
             String word
     ) {
         var idf = idf(reverseIndex, word);
+        if (idf == 0) {
+            return List.of();
+        }
         return reverseIndex.get(word).stream()
                 .map(doc -> Map.entry(doc, tf(docs.get(doc), word) / idf))
                 .toList();
@@ -74,7 +82,11 @@ public class SearchEngine {
 
     private static float idf(Map<String, List<String>> reversedIndex, String word) {
         var docsCount = reversedIndex.size();
-        var termCount = reversedIndex.get(word).size();
-        return (float) (Math.log(1 + (docsCount - termCount + 1) / (termCount + 0.5)) / Math.log(2));
+        if (reversedIndex.containsKey(word)) {
+            var termCount = reversedIndex.get(word).size();
+            return (float) (Math.log(1 + (docsCount - termCount + 1) / (termCount + 0.5)) / Math.log(2));
+        } else {
+            return 0;
+        }
     }
 }
