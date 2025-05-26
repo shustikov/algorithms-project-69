@@ -150,19 +150,14 @@ class SearchEngineTest {
 
     @Test
     void search_target() {
-        var res1 = SearchEngine.search(garb, "trash island");
-        System.out.println("RES1: " + res1);
-        var ref1 = List.of( "garbage_patch_NG", "garbage_patch_ocean_clean", "garbage_patch_wiki");
-        //assertLinesMatch(ref1, res1);
+        var res2 = SearchEngine.search(garb, "the trash island is a");
+        var ref = List.of("garbage_patch_NG", "garbage_patch_ocean_clean", "garbage_patch_wiki", "garbage_patch_spam");
+        assertLinesMatch(ref, res2);
 
-        //var res2 = SearchEngine.search(garb, "the trash island is a");
-        //var ref = List.of("garbage_patch_NG", "garbage_patch_ocean_clean", "garbage_patch_wiki", "garbage_patch_spam");
-        //assertLinesMatch(ref, res2);
+        var res3 = SearchEngine.search(List.of(), "");
+        assertLinesMatch(List.of(), res3);
 
-        //var res3 = SearchEngine.search(List.of(), "");
-        //assertLinesMatch(List.of(), res3);
-
-        //var res4 = SearchEngine.search(docs, "shoot at me, nerd");
-        //assertLinesMatch(List.of("doc2", "doc1"), res4);
+        var res4 = SearchEngine.search(docs, "shoot at me, nerd");
+        assertLinesMatch(List.of("doc2", "doc1"), res4);
     }
 }

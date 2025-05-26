@@ -8,14 +8,9 @@ import java.util.stream.Collectors;
 public class SearchEngine {
     public static List<String> search(List<Map<String, String>> docs, String text) {
         var searchingWords = Arrays.stream(text.split(" ")).map(SearchEngine::trim).toList();
-        System.out.println("WORDS: " + searchingWords);
         var index = index(docs);
-        index.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue().stream().filter(s-> s.equals("trash") || s.equals("island")).sorted().toList()))
-                .forEach(entry -> System.out.println("INDEX: " + entry.getKey() + " = " + entry.getValue()));
         var reversedIndex = reverseIndex(index);
-        System.out.println("REVERSED: " + reversedIndex);
         var scoredResultMap = idfFt(index, reversedIndex, searchingWords);
-        System.out.println("RES: " + scoredResultMap);
 
         return scoredResultMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -28,6 +23,7 @@ public class SearchEngine {
                 .matcher(token)
                 .results()
                 .map(MatchResult::group)
+                .map(String::toLowerCase)
                 .collect(Collectors.joining());
     }
 
@@ -73,7 +69,7 @@ public class SearchEngine {
         if (idf == 0) {
             return List.of();
         }
-        return reverseIndex.get(word).stream()
+        return reverseIndex.get(word).stream().distinct()
                 .map(doc -> Map.entry(doc, tf(docs.get(doc), word) / idf))
                 .toList();
     }
